@@ -24,7 +24,7 @@ class OHLCV:
             raise ValueError('`volume` column not found in data')
 
         # dtype
-        if self.data.Index.dtype != 'datetime64[ns]':
+        if self.data.index.dtype != 'datetime64[ns]':
             raise ValueError('`datetime` index not datetime64[ns]')
         if self.data['open'].dtype != np.float64:
             raise ValueError('`open` column not float64')

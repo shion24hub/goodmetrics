@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal, Optional
 
@@ -9,24 +10,26 @@ class MarketOrder:
     side: Side
     size: int
 
-    stop_loss: Optional[float] = None
-    take_profit: Optional[float] = None
+    reduce_only: bool = False
+    stop_loss: Optional[StopOrder] = None
+    take_profit: Optional[LimitOrder] = None
     
     def __post_init__(self):
         if self.size <= 0:
             raise ValueError('`size` must be positive')
         if self.side not in ['Buy/Long', 'Sell/Short']:
             raise ValueError('`side` must be either `Buy/Long` or `Sell/Short`')
-        if self.stop_loss is not None and self.stop_loss <= 0:
-            raise ValueError('`stop_loss` must be positive')
-        if self.take_profit is not None and self.take_profit <= 0:
-            raise ValueError('`take_profit` must be positive')
+        
+        self.position = self.size if self.side == 'Buy/Long' else -self.size
         
     def is_valid(self, price: float) -> bool:
         return True
     
     def is_triggered(self, high: float, low: float) -> bool:
         return True
+    
+    def entry_price(self, price: float) -> float:
+        return price
 
 
 @dataclass
@@ -35,8 +38,9 @@ class LimitOrder:
     size: float
     target_price: float
 
-    stop_loss: Optional[float] = None
-    take_profit: Optional[float] = None
+    reduce_only: bool = False
+    stop_loss: Optional[StopOrder] = None
+    take_profit: Optional[LimitOrder] = None
     
     def __post_init__(self):
         if self.size <= 0:
@@ -45,10 +49,8 @@ class LimitOrder:
             raise ValueError('`side` must be either `Buy/Long` or `Sell/Short')
         if self.target_price <= 0:
             raise ValueError('`price` must be positive')
-        if self.stop_loss is not None and self.stop_loss <= 0:
-            raise ValueError('`stop_loss` must be positive')
-        if self.take_profit is not None and self.take_profit <= 0:
-            raise ValueError('`take_profit` must be positive')
+        
+        self.position = self.size if self.side == 'Buy/Long' else -self.size
         
     def is_valid(self, price: float) -> bool:
         if self.side == 'Buy/Long':
@@ -61,6 +63,9 @@ class LimitOrder:
             return low <= self.target_price
         else:
             return high >= self.target_pric
+        
+    def entry_price(self, price: float) -> float:
+        return self.target_price
 
 
 @dataclass
@@ -69,8 +74,9 @@ class StopOrder:
     size: float
     target_price: float
 
-    stop_loss: Optional[float] = None
-    take_profit: Optional[float] = None
+    reduce_only: bool = False
+    stop_loss: Optional[StopOrder] = None
+    take_profit: Optional[LimitOrder] = None
 
     def __post_init__(self):
         if self.size <= 0:
@@ -79,10 +85,8 @@ class StopOrder:
             raise ValueError('`side` must be either `Buy/Long` or `Sell/Short')
         if self.target_price <= 0:
             raise ValueError('`price` must be positive')
-        if self.stop_loss is not None and self.stop_loss <= 0:
-            raise ValueError('`stop_loss` must be positive')
-        if self.take_profit is not None and self.take_profit <= 0:
-            raise ValueError('`take_profit` must be positive')
+        
+        self.position = self.size if self.side == 'Buy/Long' else -self.size
     
     def is_valid(self, price: float) -> bool:
         if self.side == 'Buy/Long':
@@ -94,5 +98,8 @@ class StopOrder:
         if self.side == 'Buy/Long':
             return low >= self.target_price
         else:
-            return high <= self.target_pric
+            return high <= self.target_price
+        
+    def entry_price(self, price: float) -> float:
+        return self.target_price
 
