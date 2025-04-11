@@ -330,6 +330,8 @@ class OrderManager:
 
         if initial_orders is not None and not isinstance(initial_orders, list):
             raise TypeError("`initial_orders` must be a list of OrderABC instances.")
+        
+        initial_orders = initial_orders or []
 
         for order in initial_orders:
             # Check if the order is an instance of OrderABC in `add` method.
