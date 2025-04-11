@@ -120,17 +120,17 @@ class OrderBase(OrderABC):
         """
 
         if not isinstance(other, OrderBase):
-            return NotImplemented
+            return ValueError("Cannot compare OrderBase with non-OrderBase object.")
 
         return self.identifier == other.identifier
 
     def __ne__(self, other: OrderBase) -> bool:
         if not isinstance(other, OrderBase):
-            return NotImplemented
+            return ValueError("Cannot compare OrderBase with non-OrderBase object.")
 
         return not self.__eq__(other)
 
-    def equals_to(self, other: OrderBase, strictly=False) -> bool:
+    def equals_to(self, other: OrderBase, strictly: bool = False) -> bool:
         """
         Compare two orders based on their attributes.
         If `strictly` is True, it will compare the identifiers as well.
