@@ -337,6 +337,12 @@ class OrderManager:
                 self.add_to_order_mapper(order)
             else:
                 self.add_to_conditional_order_mapper(order)
+    
+    def __repr__(self):
+        pass
+
+    def __str__(self):
+        pass
 
     # TODO: Add a method to get dictionary of order_mapper and conditional_order_mapper.
     #       and delete the _order_mapper and _conditional_order_mapper properties.
