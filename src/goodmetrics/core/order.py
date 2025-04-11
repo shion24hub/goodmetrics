@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from abc import ABCMeta, abstractmethod
 from decimal import Decimal
-from typing import Literal, Type
+from typing import Type
 
 from goodmetrics.core.type_defs import Side
 
@@ -113,28 +113,41 @@ class OrderBase(OrderABC):
     def __str__(self):
         return f"OrderBase(size={self.size}, side={self.side}, price={self.price}, tp_price={self.tp_price}, sl_price={self.sl_price}, trigger_price={self.trigger_price}), reduce_only={self.reduce_only}"
 
-    def __eq__(self, other: OrderBase) -> bool:
+    def __eq__(self, other: Type[OrderABC]) -> bool:
         """
         Compare two orders based on their identifiers.
         If you want to compare the attributes of the orders, use the `equals_to` method.
         """
 
-        if not isinstance(other, OrderBase):
-            return ValueError("Cannot compare OrderBase with non-OrderBase object.")
+        if not isinstance(other, Type[OrderABC]):
+            return TypeError("Cannot compare OrderBase with non-OrderABC object.")
 
         return self.identifier == other.identifier
 
-    def __ne__(self, other: OrderBase) -> bool:
-        if not isinstance(other, OrderBase):
-            return ValueError("Cannot compare OrderBase with non-OrderBase object.")
+    def __ne__(self, other: Type[OrderABC]) -> bool:
+        if not isinstance(other, Type[OrderABC]):
+            return TypeError("Cannot compare OrderBase with non-OrderABC object.")
 
         return not self.__eq__(other)
 
-    def equals_to(self, other: OrderBase, strictly: bool = False) -> bool:
+    def equals_to(self, other: Type[OrderABC], strictly: bool = False) -> bool:
         """
         Compare two orders based on their attributes.
         If `strictly` is True, it will compare the identifiers as well.
+
+        Args:
+            other (OrderABC): The other order to compare with.
+            strictly (bool): If True, compare identifiers as well.
+
+        Raises:
+            TypeError: If `other` is not an OrderABC instance.
+
+        Returns:
+            bool: True if the orders are equal, False otherwise.
         """
+        if not isinstance(other, Type[OrderABC]):
+            return TypeError("Cannot compare OrderBase with non-OrderABC object.")
+
         if strictly:
             return self == other
         else:
@@ -277,6 +290,7 @@ class MarketOrder(OrderBase):
     def __repr__(self):
         return f"MarketOrder(size={self.size}, side={self.side}, price={self.price}, tp_price={self.tp_price}, sl_price={self.sl_price}, trigger_price={self.trigger_price}), reduce_only={self.reduce_only}"
 
+    # Override the __str__ method to include the class name
     def __str__(self):
         return f"MarketOrder(size={self.size}, side={self.side}, price={self.price}, tp_price={self.tp_price}, sl_price={self.sl_price}, trigger_price={self.trigger_price}), reduce_only={self.reduce_only}"
 
@@ -293,6 +307,7 @@ class LimitOrder(OrderBase):
     def __repr__(self):
         return f"LimitOrder(size={self.size}, side={self.side}, price={self.price}, tp_price={self.tp_price}, sl_price={self.sl_price}, trigger_price={self.trigger_price}), reduce_only={self.reduce_only}"
 
+    # Override the __str__ method to include the class name
     def __str__(self):
         return f"LimitOrder(size={self.size}, side={self.side}, price={self.price}, tp_price={self.tp_price}, sl_price={self.sl_price}, trigger_price={self.trigger_price}), reduce_only={self.reduce_only}"
 
