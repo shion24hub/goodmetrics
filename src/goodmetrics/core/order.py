@@ -5,7 +5,7 @@ from abc import ABCMeta, abstractmethod
 from decimal import Decimal
 from typing import Literal, Type
 
-Side = Literal["BUY/LONG", "SELL/SHORT"]
+from goodmetrics.core.type_defs import Side
 
 
 # <-- Execution and Triggering Protocols -->
